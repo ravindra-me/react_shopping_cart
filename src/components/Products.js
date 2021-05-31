@@ -1,54 +1,47 @@
-import React from "react";
+import React, { useContext } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import OrderBy from "./OrderBy";
+import Context from "./Context";
 
-class Products extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedOrder: "",
-    };
+function handleOrderProducts(order, products) {
+  let sortedProducts = [...products];
+  if (order === "highest") {
+    sortedProducts = sortedProducts.sort((a, b) => b.price - a.price);
   }
-  handleOrderBy = (event) => {
-    this.setState({ selectedOrder: event.target.value });
-  };
-
-  handleOrderProducts = (order, products) => {
-    let sortedProducts = [...products];
-    if (order === "highest") {
-      sortedProducts = sortedProducts.sort((a, b) => b.price - a.price);
-    }
-    if (order === "lowest") {
-      sortedProducts = sortedProducts.sort((a, b) => a.price - b.price);
-    }
-    return sortedProducts;
-  };
-
-  render() {
-    let { selectedOrder } = this.state;
-    let products = this.handleOrderProducts(selectedOrder, this.props.data);
-
-    return (
-      <div>
-        <div className="products-filter">
-          <p>
-            {`${this.props.data.length} Product${
-              this.props.data.length > 1 ? "s" : ""
-            } found.`}{" "}
-          </p>
-          <OrderBy
-            selectedOrder={selectedOrder}
-            handleOrderBy={this.handleOrderBy}
-          />
-        </div>
-        <div className="flex wrap">
-          {products.map((product) => (
-            <Product {...product} />
-          ))}
-        </div>
-      </div>
-    );
+  if (order === "lowest") {
+    sortedProducts = sortedProducts.sort((a, b) => a.price - b.price);
   }
+  return sortedProducts;
 }
+
+function Products(props) {
+  const { products } = useContext(Context);
+  const selectedOrder = useSelector((state) => {
+    console.log(state);
+    return state.selectedOrder;
+  });
+  console.log(selectedOrder);
+  let filteredProducts = handleOrderProducts(selectedOrder, products);
+
+  return (
+    <div>
+      <div className="products-filter">
+        <p>
+          {`${filteredProducts.length} Product${
+            filteredProducts.length > 1 ? "s" : ""
+          } found.`}{" "}
+        </p>
+        <OrderBy />
+      </div>
+      <div className="flex wrap">
+        {filteredProducts.map((product) => (
+          <Product {...product} />
+        ))}
+      </div>
+    </div>
+  );
+}
+// }
 
 function Product(props) {
   return (

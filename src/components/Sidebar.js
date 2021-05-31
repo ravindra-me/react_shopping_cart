@@ -1,4 +1,8 @@
-function Sidebar({ products }) {
+import { useContext } from "react";
+import Context from "./Context";
+
+function Sidebar() {
+  const { products } = useContext(Context);
   let sizes = products.reduce((acc, cv) => {
     acc = acc.concat(cv.availableSizes);
     return acc;
